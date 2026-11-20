@@ -224,6 +224,38 @@ if (newArray === array) {
 }
 ```
 
+# 🔒 Checking that statements are read-only
+
+If you need to decide whether some SQL is safe to send to a database under a read-only
+convention, use `checkReadOnly` (on SQL text) or `checkReadOnlyStatements` (on an AST you
+already parsed). Neither connects to a database nor executes anything.
+
+```typescript
+import { checkReadOnly, checkReadOnlyStatements, parse } from 'pgsql-ast-parser';
+
+checkReadOnly('select id from users where id = $1')
+// => { status: 'read-only', readOnly: true, statements: [...] }
+
+checkReadOnly('with purged as (delete from stale_rows) select * from purged')
+// => { status: 'write', readOnly: false, statements: [{ ...,
+//      issues: [{ kind: 'write', nodeType: 'delete', path: '$.bind[0].statement', depth: 1 }] }] }
+
+checkReadOnlyStatements(parse('select 1; delete from t'))
+```
+
+The verdict is structural, not textual: operation words inside string literals or quoted
+identifiers do not matter, whereas a write found anywhere in the structure does.
+
+- `readOnly` is `true` only if at least one statement was inspected and **every** statement
+  is read-only. Empty input (`status: 'empty'`) and parse failures (`status: 'parse-error'`)
+  never pass.
+- Per-statement verdicts are returned in input order (`statements[].index`).
+- Structures outside the supported scope (plain queries, common write statements and CTEs
+  over them) are reported as `unsupported` for manual review. Row-locking `FOR UPDATE`
+  clauses are treated the same way.
+- Issues only carry a category, the AST node type and a structural path/depth; they never
+  echo the SQL text.
+
 # Parsing literal values
 
 Postgres implements several literal syntaxes (string-to-something converters), whiches parsers are exposed as helper functions by this pgsql-ast-parser:

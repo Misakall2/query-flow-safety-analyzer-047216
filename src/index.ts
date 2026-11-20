@@ -8,3 +8,5 @@ export type { IAstPartialMapper, IAstMapper } from './ast-mapper';
 export type { nil } from './utils';
 export type { IAstPartialVisitor, IAstVisitor } from './ast-visitor'
 export { intervalToString, normalizeInterval } from './literal-syntaxes/interval-builder';
+export { checkReadOnly, checkReadOnlyStatements } from './read-only';
+export type { ReadOnlyIssue, ReadOnlyIssueKind, ReadOnlyReport, ReadOnlyReportStatus, ReadOnlyStatementResult, ReadOnlyStatementStatus } from './read-only';

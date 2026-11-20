@@ -8,3 +8,5 @@ export type { IAstPartialMapper, IAstMapper } from './ast-mapper.ts';
 export type { nil } from './utils.ts';
 export type { IAstPartialVisitor, IAstVisitor } from './ast-visitor.ts';
 export { intervalToString, normalizeInterval } from './literal-syntaxes/interval-builder.ts';
+export { checkReadOnly, checkReadOnlyStatements } from './read-only.ts';
+export type { ReadOnlyIssue, ReadOnlyIssueKind, ReadOnlyReport, ReadOnlyReportStatus, ReadOnlyStatementResult, ReadOnlyStatementStatus } from './read-only.ts';
